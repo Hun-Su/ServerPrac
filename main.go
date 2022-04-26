@@ -18,20 +18,20 @@ func main() {
 
 	db := db.Get_Db()
 
-	rows, err := db.Query("SELECT name FROM emp where id = ?", 003)
+	_, err := db.Query("SELECT name FROM emp where id = ?", 003)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	var name string
-
-	for rows.Next() {
-		err := rows.Scan(&name)
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(name)
-	}
+	//
+	//var name string
+	//
+	//for rows.Next() {
+	//	err := rows.Scan(&name)
+	//	if err != nil {
+	//		log.Fatal(err)
+	//	}
+	//	fmt.Println(name)
+	//}
 
 	switch config.Program {
 	case "HTTP":
