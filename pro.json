@@ -1,3 +1,13 @@
 { 
-	"program": "Client"
+	"program": "Client",
+	"port": {
+		"tcp": ":1234",
+		"http": "127.0.0.1:5000"
+	},
+	"db": {
+		"user": "root",
+		"pwd": "password",
+		"port": "127.0.0.1:3306",
+		"name": "test"
+	}
 }

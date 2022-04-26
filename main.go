@@ -1,58 +1,58 @@
 package main
 
 import (
+	"echo/Config"
 	"echo/HTTP_server"
 	"echo/TCP_server"
 	"echo/cli"
-	"encoding/json"
+	"echo/db"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
-	"os"
 )
 
-type Type_selector struct {
-	Program string `json:"program"`
-}
+func main() {
+	config := Config.LoadConfig()
+	fmt.Println(config.Program)
 
-func LoadConfig() Type_selector {
-	var config Type_selector
-	file, err := os.Open("pro.json")
-	defer file.Close()
+	db := db.Get_Db()
+
+	rows, err := db.Query("SELECT name FROM emp where id = ?", 003)
 	if err != nil {
 		log.Fatal(err)
 	}
-	decoder := json.NewDecoder(file)
-	err = decoder.Decode(&config)
-	return config
-}
 
-func main() {
-	config := LoadConfig()
-	fmt.Println(config.Program)
+	var name string
+
+	for rows.Next() {
+		err := rows.Scan(&name)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(name)
+	}
 
 	switch config.Program {
 	case "HTTP":
 		http.Handle("/", new(HTTP.TestHandler))
 
-		http.ListenAndServe("127.0.0.1:5000", nil)
+		http.ListenAndServe(config.Port.HTTP, nil)
 	case "TCP":
-		addr := ":1234"
-		server, err := net.Listen("tcp", addr)
+		server, err := net.Listen("tcp", config.Port.TCP)
 		if err != nil {
 			log.Fatalln(err)
 		}
 		defer server.Close()
 
-		log.Println("Server is running on:", addr)
+		log.Println("Server is running on:", config.Port.TCP)
 
 		for {
 			conn, err := server.Accept()
 			go TCP_server.Comm(conn, err)
 		}
 	case "Client":
-		conn, err := net.Dial("tcp", ":1234")
+		conn, err := net.Dial("tcp", config.Port.TCP)
 		// "tcp", "tcp4", "tcp6", "unix" or "unixpacket". 로 설정 가능
 
 		if err != nil {
