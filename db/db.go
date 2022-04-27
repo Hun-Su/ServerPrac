@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-func Get_Db() sql.DB {
+func GetDb() sql.DB {
 	config := Config.LoadConfig()
 	// sql.DB 객체 생성
 	db, err := sql.Open("mysql", config.Db.User+":"+config.Db.Pwd+"@tcp("+config.Db.Port+")/"+config.Db.Name)

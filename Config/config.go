@@ -2,11 +2,11 @@ package Config
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
-	"os"
 )
 
-type Type_selector struct {
+type TypeSelector struct {
 	Program string `json:"program"`
 	Port    struct {
 		TCP  string `json:"tcp"`
@@ -20,14 +20,13 @@ type Type_selector struct {
 	} `json:"db"`
 }
 
-func LoadConfig() Type_selector {
-	var config Type_selector
-	file, err := os.Open("pro.json")
-	defer file.Close()
+func LoadConfig() TypeSelector {
+	var config TypeSelector
+	file, err := ioutil.ReadFile("pro.json")
+	//defer file.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
-	decoder := json.NewDecoder(file)
-	err = decoder.Decode(&config)
+	_ = json.Unmarshal(file, &config)
 	return config
 }

@@ -16,7 +16,7 @@ func main() {
 	config := Config.LoadConfig()
 	fmt.Println(config.Program)
 
-	db := db.Get_Db()
+	db := db.GetDb()
 
 	_, err := db.Query("SELECT name FROM emp where id = ?", 003)
 	if err != nil {
