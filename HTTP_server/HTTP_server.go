@@ -1,48 +1,97 @@
 package HTTP
 
 import (
-	"io/ioutil"
+	"echo/server"
 	"net/http"
-	"strconv"
+	"reflect"
 	"strings"
-	"unicode"
 )
 
 type TestHandler struct {
-	http.Handler
+	resource server.Resource
 }
 
-func (h *TestHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	b, _ := ioutil.ReadAll(req.Body)
-	defer req.Body.Close()
+//leehs 20220516 핸들러의 모든 필드들의 메소드들을 각각 map에 저장하는 함수
+func (h *TestHandler) init() {
 
-	var operator string
-	var a []string
-	var res string
+	elem := reflect.ValueOf(*h)
 
-	for _, val := range string(b) {
-		if !unicode.IsDigit(val) {
-			operator = string(val)
+	for i := 0; i < elem.NumField(); i++ { //
+		f := elem.Field(i)
+		ty := f.Type()
+		cn := strings.ToLower(ty.Name())
+
+		v := reflect.New(ty)
+
+		for i := 0; i < v.NumMethod(); i++ {
+			t := v.Type().Method(i)
+			m := v.MethodByName(t.Name)
+			name := t.Name
+
+			if strings.ToUpper(name[:1]) != name[:1] {
+				continue
+			}
+
+			mn := strings.ToLower(name)
+
+			functions["/"+cn+"/"+mn] = m.Interface()
 		}
 	}
+}
 
-	a = strings.Split(string(b), operator)
+//leehs 20220516 path와 메소드를 매핑하여 저장하는 map
+var functions map[string]interface{}
 
-	v1, _ := strconv.Atoi(a[0])
-	v2, _ := strconv.Atoi(a[1])
+func initFunctions() {
+	functions = make(map[string]interface{})
 
-	switch operator {
-	case "+":
-		res = strconv.Itoa(v1 + v2)
-	case "-":
-		res = strconv.Itoa(v1 - v2)
-	case "*":
-		res = strconv.Itoa(v1 * v2)
-	case "/":
-		res = strconv.Itoa(v1 / v2)
-	default:
-		res = "Not a binary equation"
+	list := TestHandler{}
+	list.init()
+}
+
+func (h TestHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	initFunctions()
+
+	path := req.URL.Path
+
+	//leehs 20220516 functions에 저장된 데이터를 기준으로 path에 맞는 함수 호출
+	for f, _ := range functions {
+		if f == path {
+			ff := reflect.ValueOf(functions[f])
+			ff.Call(nil)
+		}
 	}
-
-	w.Write([]byte(res))
+	//}
+	//b, _ := ioutil.ReadAll(req.Body)
+	//defer req.Body.Close()
+	//
+	//var operator string
+	//var a []string
+	//var res string
+	//
+	//for _, val := range string(b) {
+	//	if !unicode.IsDigit(val) {
+	//		operator = string(val)
+	//	}
+	//}
+	//
+	//a = strings.Split(string(b), operator)
+	//
+	//v1, _ := strconv.Atoi(a[0])
+	//v2, _ := strconv.Atoi(a[1])
+	//
+	//switch operator {
+	//case "+":
+	//	res = strconv.Itoa(v1 + v2)
+	//case "-":
+	//	res = strconv.Itoa(v1 - v2)
+	//case "*":
+	//	res = strconv.Itoa(v1 * v2)
+	//case "/":
+	//	res = strconv.Itoa(v1 / v2)
+	//default:
+	//	res = "Not a binary equation"
+	//}
+	//
+	//w.Write([]byte(res))
 }
