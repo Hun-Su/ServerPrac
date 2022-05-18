@@ -25,15 +25,21 @@ func getFiles(path string) []string {
 	return dfile
 }
 
-//leehs 20220517 데이터 파일들의 모든 데이터를 db에 추가
-func (this Resource) Upload() {
+func openDB() *sql.DB {
 	config := Config.LoadConfig()
-	root := "C:\\work\\client\\TS\\Server\\Data\\"
 	s, err := sql.Open("mysql", config.Db.User+":"+config.Db.Pwd+"@tcp("+config.Db.Port+")/"+config.Db.Name)
 
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	return s
+}
+
+//leehs 20220517 데이터 파일들의 모든 데이터를 db에 추가
+func (this Resource) Upload() {
+	root := "C:\\work\\client\\TS\\Server\\Data\\"
+	s := openDB()
 
 	dfile := getFiles(root)
 
@@ -83,11 +89,7 @@ func (this Resource) Upload() {
 
 //leehs 20220517 db의 모든 데이터를 삭제하는 query
 func (this Resource) Clear() {
-	config := Config.LoadConfig()
-	s, err := sql.Open("mysql", config.Db.User+":"+config.Db.Pwd+"@tcp("+config.Db.Port+")/"+config.Db.Name)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	s := openDB()
 
 	//leehs 20220517 db를 drop한 뒤 같은 이름의 db를 새로 생성
 	clear := fmt.Sprint("DROP DATABASE test")
