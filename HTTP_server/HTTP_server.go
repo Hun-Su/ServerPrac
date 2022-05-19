@@ -8,10 +8,6 @@ import (
 	"strings"
 )
 
-const (
-	defaultMaxMemory = 32 << 20 // 32 MB
-)
-
 type TestHandler struct {
 	resource server.Resource
 }
