@@ -2,9 +2,14 @@ package HTTP
 
 import (
 	"echo/server"
+	"log"
 	"net/http"
 	"reflect"
 	"strings"
+)
+
+const (
+	defaultMaxMemory = 32 << 20 // 32 MB
 )
 
 type TestHandler struct {
@@ -53,13 +58,25 @@ func (h TestHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	initFunctions()
 
 	path := req.URL.Path
+	param := strings.Split(req.FormValue("name"), ",")
+	var in []reflect.Value
+	for _, i := range param {
+		if i != "" {
+			in = append(in, reflect.ValueOf(i))
+		}
+	}
 
 	//leehs 20220516 functions에 저장된 데이터를 기준으로 path에 맞는 함수 호출
-	for f, _ := range functions {
-		if f == path {
-			ff := reflect.ValueOf(functions[f])
+	if f, i := functions[path]; i {
+		ff := reflect.ValueOf(f)
+		if len(in) == 0 {
 			ff.Call(nil)
+		} else {
+			ff.Call(in)
 		}
+	} else {
+		w.WriteHeader(404)
+		log.Println("No such method")
 	}
 	//}
 	//b, _ := ioutil.ReadAll(req.Body)
