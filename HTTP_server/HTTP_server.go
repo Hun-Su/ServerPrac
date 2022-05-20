@@ -8,10 +8,6 @@ import (
 	"strings"
 )
 
-const (
-	defaultMaxMemory = 32 << 20 // 32 MB
-)
-
 type TestHandler struct {
 	resource server.Resource
 }
@@ -56,59 +52,28 @@ func initFunctions() {
 
 func (h TestHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	initFunctions()
-
 	path := req.URL.Path
-	param := strings.Split(req.FormValue("name"), ",")
-	var in []reflect.Value
-	for _, i := range param {
-		if i != "" {
-			in = append(in, reflect.ValueOf(i))
-		}
-	}
 
 	//leehs 20220516 functions에 저장된 데이터를 기준으로 path에 맞는 함수 호출
 	if f, i := functions[path]; i {
-		ff := reflect.ValueOf(f)
-		if len(in) == 0 {
-			ff.Call(nil)
-		} else {
-			ff.Call(in)
+		_, err := Call(f, w, req)
+		if err != nil {
+			log.Println(err)
 		}
 	} else {
 		w.WriteHeader(404)
 		log.Println("No such method")
 	}
-	//}
-	//b, _ := ioutil.ReadAll(req.Body)
-	//defer req.Body.Close()
-	//
-	//var operator string
-	//var a []string
-	//var res string
-	//
-	//for _, val := range string(b) {
-	//	if !unicode.IsDigit(val) {
-	//		operator = string(val)
-	//	}
-	//}
-	//
-	//a = strings.Split(string(b), operator)
-	//
-	//v1, _ := strconv.Atoi(a[0])
-	//v2, _ := strconv.Atoi(a[1])
-	//
-	//switch operator {
-	//case "+":
-	//	res = strconv.Itoa(v1 + v2)
-	//case "-":
-	//	res = strconv.Itoa(v1 - v2)
-	//case "*":
-	//	res = strconv.Itoa(v1 * v2)
-	//case "/":
-	//	res = strconv.Itoa(v1 / v2)
-	//default:
-	//	res = "Not a binary equation"
-	//}
-	//
-	//w.Write([]byte(res))
+}
+
+//leehs 20220520 함수 호출
+func Call(function interface{}, arg ...interface{}) (result []reflect.Value, err error) {
+	f := reflect.ValueOf(function)
+
+	in := make([]reflect.Value, len(arg))
+	for i, param := range arg {
+		in[i] = reflect.ValueOf(param)
+	}
+	result = f.Call(in)
+	return
 }

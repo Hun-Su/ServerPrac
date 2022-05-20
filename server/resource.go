@@ -8,6 +8,7 @@ import (
 	"github.com/tealeg/xlsx"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"strings"
 )
 
@@ -53,21 +54,28 @@ func openDB() *sql.DB {
 }
 
 //leehs 20220519 지정된 파일만 db에 추가
-func (this Resource) Upload(name ...string) {
+func (this Resource) Upload(w http.ResponseWriter, req *http.Request) {
 	root := "C:\\work\\client\\TS\\Server\\Data\\"
 	s := openDB()
 	defer s.Close()
 	var dfile []string
+	name := strings.Split(req.FormValue("name"), ",")
 
 	for _, i := range name {
 		dfile = append(dfile, getOnlyFiles(root, i)...)
+	}
+
+	if len(dfile) == 0 {
+		msg := "Invalid file name"
+		w.Write([]byte(msg))
+		return
 	}
 
 	for _, i := range dfile {
 		xlFile, err := xlsx.OpenFile(i)
 
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
 		}
 
 		sheet := xlFile.Sheets[0]
@@ -105,10 +113,15 @@ func (this Resource) Upload(name ...string) {
 			s.Exec(ins)
 		}
 	}
+	msg := "Upload complete"
+	for _, i := range name {
+		msg = i + " " + msg
+	}
+	w.Write([]byte(msg))
 }
 
 //leehs 20220517 데이터 파일들의 모든 데이터를 db에 추가
-func (this Resource) UploadAll() {
+func (this Resource) UploadAll(w http.ResponseWriter, req *http.Request) {
 	root := "C:\\work\\client\\TS\\Server\\Data\\"
 	s := openDB()
 	defer s.Close()
@@ -157,10 +170,12 @@ func (this Resource) UploadAll() {
 			s.Exec(ins)
 		}
 	}
+	msg := "Upload complete"
+	w.Write([]byte(msg))
 }
 
 //leehs 20220517 db의 모든 데이터를 삭제
-func (this Resource) Clear() {
+func (this Resource) Clear(w http.ResponseWriter, req *http.Request) {
 	s := openDB()
 	defer s.Close()
 
@@ -170,4 +185,7 @@ func (this Resource) Clear() {
 
 	s.Exec(clear)
 	s.Exec(create)
+	
+	msg := "Clear complete"
+	w.Write([]byte(msg))
 }
