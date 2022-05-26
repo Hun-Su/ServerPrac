@@ -13,10 +13,11 @@ type TypeSelector struct {
 		HTTP string `json:"http"`
 	} `json:"port"`
 	Db struct {
-		User string `json:"user"`
-		Pwd  string `json:"pwd"`
-		Port string `json:"port"`
-		Name string `json:"name"`
+		User    string `json:"user"`
+		Pwd     string `json:"pwd"`
+		Port    string `json:"port"`
+		Name    string `json:"name"`
+		Timeout string `json:"timeout"`
 	} `json:"db"`
 }
 

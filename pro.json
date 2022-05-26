@@ -8,6 +8,7 @@
 		"user": "root",
 		"pwd": "password",
 		"port": "127.0.0.1:3306",
-		"name": "test"
+		"name": "test",
+		"timeout": "5s"
 	}
 }
