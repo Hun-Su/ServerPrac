@@ -3,6 +3,9 @@ package server
 import (
 	"echo/Config"
 	"echo/db"
+	"echo/redis"
+	"encoding/json"
+	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/tealeg/xlsx"
 	"io/ioutil"
@@ -11,6 +14,7 @@ import (
 	"strings"
 )
 
+var cli = redis.GetRedisCli()
 var CONFIG = Config.LoadConfig()
 var dbHandler = new(db.Handler)
 var s = dbHandler.Init()
@@ -53,6 +57,7 @@ func (this Resource) Upload(w http.ResponseWriter, req *http.Request) {
 	root := "C:\\work\\client\\TS\\Server\\Data\\"
 
 	tx := dbHandler.Begin()
+	defer dbHandler.Rollback(tx)
 	dbHandler.CheckConn()
 
 	defer s.Close()
@@ -119,16 +124,13 @@ func (this Resource) Upload(w http.ResponseWriter, req *http.Request) {
 			//leehs 20220517 데이터를 추가하는 query
 			_, err = tx.Query("INSERT INTO " + sheet.Name + " VALUES (" + strings.Join(line, ", ") + ")")
 			if err != nil {
-				log.Println(err, sheet.Name)
+				log.Println(err)
 			}
 		}
 	}
 
-	err := dbHandler.Commit(tx)
-	if err != nil {
-		dbHandler.Rollback(tx)
-		log.Println(err)
-	}
+	dbHandler.Commit(tx)
+
 	msg := "Upload complete"
 	msg = strings.Join(name, ", ") + " " + msg
 	w.Write([]byte(msg))
@@ -140,6 +142,7 @@ func (this Resource) UploadAll(w http.ResponseWriter, req *http.Request) {
 
 	dbHandler.CheckConn()
 	tx := dbHandler.Begin()
+	defer dbHandler.Rollback(tx)
 
 	dfile := getFiles(root)
 
@@ -197,11 +200,7 @@ func (this Resource) UploadAll(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	err := dbHandler.Commit(tx)
-	if err != nil {
-		dbHandler.Rollback(tx)
-		log.Println(err)
-	}
+	dbHandler.Commit(tx)
 	msg := "Upload complete"
 	w.Write([]byte(msg))
 }
@@ -210,6 +209,7 @@ func (this Resource) UploadAll(w http.ResponseWriter, req *http.Request) {
 func (this Resource) Clear(w http.ResponseWriter, req *http.Request) {
 	dbHandler.CheckConn()
 	tx := dbHandler.Begin()
+	defer dbHandler.Rollback(tx)
 
 	//leehs 20220517 db를 drop한 뒤 같은 이름의 db를 새로 생성
 	_, err := tx.Query("DROP DATABASE test")
@@ -222,9 +222,74 @@ func (this Resource) Clear(w http.ResponseWriter, req *http.Request) {
 		log.Println(err)
 	}
 
-	defer dbHandler.Rollback(tx)
 	dbHandler.Commit(tx)
 
 	msg := "Clear complete"
 	w.Write([]byte(msg))
+}
+
+//leehs 20220530 MySQL 데이터를 JSON 형태로 Redis에 저장
+func (this Resource) SetRedis(w http.ResponseWriter, req *http.Request) {
+	dbHandler.CheckConn()
+	tx := dbHandler.Begin()
+	defer dbHandler.Rollback(tx)
+	table := req.FormValue("table")
+
+	rows, err := tx.Query("SELECT * from " + table)
+	defer rows.Close()
+	if err != nil {
+		log.Println(err)
+		msg := "Table not found in MySQL"
+		w.Write([]byte(msg))
+		return
+	}
+
+	columns, _ := rows.Columns()
+	tableData := make([]map[string]interface{}, 0)
+	values := make([]interface{}, len(columns))
+	valuePtrs := make([]interface{}, len(columns))
+
+	for rows.Next() {
+		for i := 0; i < len(columns); i++ {
+			valuePtrs[i] = &values[i]
+		}
+		//leehs 20220530 각 Column에 저장된 데이터를 포인터가 가르키는 곳에 저장
+		rows.Scan(valuePtrs...)
+		entry := make(map[string]interface{})
+		for i, col := range columns {
+			var v interface{}
+			val := values[i]
+			b, ok := val.([]byte)
+			if ok {
+				v = string(b)
+			} else {
+				v = val
+			}
+			entry[col] = v
+		}
+		tableData = append(tableData, entry)
+	}
+	jsonData, err := json.Marshal(tableData)
+	if err != nil {
+		log.Println(err)
+	}
+
+	cli.Set(cli.Context(), table, string(jsonData), 0)
+
+	msg := "Data saved in Redis server"
+	w.Write([]byte(msg))
+}
+
+//leehs 20220530 Redis에 저장된 데이터 가져오기
+func (this Resource) GetRedis(w http.ResponseWriter, req *http.Request) (res string) {
+	table := req.FormValue("table")
+	res = redis.GetValue(cli, table)
+	fmt.Println(res)
+
+	if res == "" {
+		w.Write([]byte("No such table"))
+	} else {
+		w.Write([]byte(res))
+	}
+	return
 }

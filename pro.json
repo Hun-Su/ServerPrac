@@ -10,5 +10,9 @@
 		"port": "127.0.0.1:3306",
 		"name": "test",
 		"timeout": "5s"
+	},
+	"redis": {
+		"port": "127.0.0.1:6666",
+		"timeout": "5s"
 	}
 }

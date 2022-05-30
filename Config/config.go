@@ -19,6 +19,10 @@ type TypeSelector struct {
 		Name    string `json:"name"`
 		Timeout string `json:"timeout"`
 	} `json:"db"`
+	Redis struct {
+		Port    string `json:"port"`
+		Timeout string `json:"timeout"`
+	} `json:"redis"`
 }
 
 func LoadConfig() TypeSelector {
