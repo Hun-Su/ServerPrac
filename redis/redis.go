@@ -19,21 +19,19 @@ func GetRedisCli() *redis.Client {
 }
 
 //leehs 20220530 Redis 데이터 가져오기
-func GetValue(cli *redis.Client, key string) string {
-	ctx := cli.Context()
-
-	val := cli.Get(ctx, key)
-	return val.Val()
+func GetValue(cli *redis.Client, key string) *redis.StringCmd {
+	val := cli.Get(cli.Context(), key)
+	return val
 }
 
 //leehs 20220530 Redis 데이터 저장
 func SetValue(cli *redis.Client, key string, val interface{}) string {
-	ctx := cli.Context()
 	t, _ := time.ParseDuration(CONFIG.Redis.Timeout)
 
-	status := cli.Set(ctx, key, val, t)
+	status := cli.Set(cli.Context(), key, val, t)
 	return status.Val()
 }
 
-// Set
-// Get
+func Empty(cli *redis.Client) {
+	cli.FlushDB(cli.Context())
+}

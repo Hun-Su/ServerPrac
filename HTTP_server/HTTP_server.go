@@ -9,7 +9,16 @@ import (
 )
 
 type TestHandler struct {
-	resource server.Resource
+	resource    server.Resource
+	dialogue    server.Dialogue
+	npc         server.NPC
+	qitem       server.Qitem
+	stringquest server.StringQuest
+	stringitem  server.StringItem
+	stringname  server.StringName
+	quest       server.Quest
+	monster     server.Monster
+	prop        server.Prop
 }
 
 //leehs 20220516 핸들러의 모든 필드들의 메소드들을 각각 map에 저장하는 함수

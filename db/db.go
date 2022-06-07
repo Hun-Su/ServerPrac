@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"echo/Config"
 	_ "github.com/go-sql-driver/mysql"
-	"log"
 	"strings"
 	"time"
 )
@@ -29,7 +28,6 @@ type DB struct {
 //leehs 20220526 DB연결 확인 후 없으면 재접속
 func (this *Handler) CheckConn() {
 	err := this.db.DB.Ping()
-	log.Println(err)
 
 	if err != nil {
 		this.Init()

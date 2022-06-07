@@ -6,6 +6,7 @@ import (
 	"echo/redis"
 	"encoding/json"
 	"fmt"
+	r "github.com/go-redis/redis/v8"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/tealeg/xlsx"
 	"io/ioutil"
@@ -234,47 +235,50 @@ func (this Resource) SetRedis(w http.ResponseWriter, req *http.Request) {
 	tx := dbHandler.Begin()
 	defer dbHandler.Rollback(tx)
 	table := req.FormValue("table")
+	name := strings.Split(table, ",")
 
-	rows, err := tx.Query("SELECT * from " + table)
-	defer rows.Close()
-	if err != nil {
-		log.Println(err)
-		msg := "Table not found in MySQL"
-		w.Write([]byte(msg))
-		return
-	}
-
-	columns, _ := rows.Columns()
-	tableData := make([]map[string]interface{}, 0)
-	values := make([]interface{}, len(columns))
-	valuePtrs := make([]interface{}, len(columns))
-
-	for rows.Next() {
-		for i := 0; i < len(columns); i++ {
-			valuePtrs[i] = &values[i]
+	for _, i := range name {
+		rows, err := tx.Query("SELECT * from " + i)
+		defer rows.Close()
+		if err != nil {
+			log.Println(err)
+			msg := "Table not found in MySQL"
+			w.Write([]byte(msg))
+			return
 		}
-		//leehs 20220530 각 Column에 저장된 데이터를 포인터가 가르키는 곳에 저장
-		rows.Scan(valuePtrs...)
-		entry := make(map[string]interface{})
-		for i, col := range columns {
-			var v interface{}
-			val := values[i]
-			b, ok := val.([]byte)
-			if ok {
-				v = string(b)
-			} else {
-				v = val
+
+		columns, _ := rows.Columns()
+		tableData := make([]map[string]interface{}, 0)
+		values := make([]interface{}, len(columns))
+		valuePtrs := make([]interface{}, len(columns))
+
+		for rows.Next() {
+			for i := 0; i < len(columns); i++ {
+				valuePtrs[i] = &values[i]
 			}
-			entry[col] = v
+			//leehs 20220530 각 Column에 저장된 데이터를 포인터가 가르키는 곳에 저장
+			rows.Scan(valuePtrs...)
+			entry := make(map[string]interface{})
+			for i, col := range columns {
+				var v interface{}
+				val := values[i]
+				b, ok := val.([]byte)
+				if ok {
+					v = string(b)
+				} else {
+					v = val
+				}
+				entry[col] = v
+			}
+			tableData = append(tableData, entry)
 		}
-		tableData = append(tableData, entry)
-	}
-	jsonData, err := json.Marshal(tableData)
-	if err != nil {
-		log.Println(err)
-	}
+		jsonData, err := json.Marshal(tableData)
+		if err != nil {
+			log.Println(err)
+		}
 
-	cli.Set(cli.Context(), table, string(jsonData), 0)
+		cli.Set(cli.Context(), i, string(jsonData), 0)
+	}
 
 	msg := "Data saved in Redis server"
 	w.Write([]byte(msg))
@@ -283,13 +287,20 @@ func (this Resource) SetRedis(w http.ResponseWriter, req *http.Request) {
 //leehs 20220530 Redis에 저장된 데이터 가져오기
 func (this Resource) GetRedis(w http.ResponseWriter, req *http.Request) (res string) {
 	table := req.FormValue("table")
-	res = redis.GetValue(cli, table)
+	tmp := redis.GetValue(cli, table)
+	res = tmp.Val()
 	fmt.Println(res)
 
-	if res == "" {
+	if tmp.Err() == r.Nil {
 		w.Write([]byte("No such table"))
 	} else {
 		w.Write([]byte(res))
 	}
 	return
+}
+
+func (this Resource) EmptyRedis(w http.ResponseWriter, req *http.Request) {
+	redis.Empty(cli)
+
+	w.Write([]byte("Redis Empty"))
 }
