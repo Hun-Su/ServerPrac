@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"echo/Config"
 	_ "github.com/go-sql-driver/mysql"
+	"log"
 	"strings"
 	"time"
 )
@@ -30,6 +31,7 @@ func (this *Handler) CheckConn() {
 	err := this.db.DB.Ping()
 
 	if err != nil {
+		log.Println(err)
 		this.Init()
 	} else {
 		return
