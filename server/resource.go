@@ -19,6 +19,7 @@ var cli = redis.GetRedisCli()
 var CONFIG = Config.LoadConfig()
 var dbHandler = new(db.Handler)
 var s = dbHandler.Init()
+
 var monster []Monster
 var npc []NPC
 var qitem []Qitem
@@ -36,28 +37,39 @@ type DBHandler struct {
 }
 
 type ResourceProvider struct {
-	dialogue    Dialogue
-	npc         NPC
-	qitem       Qitem
-	stringquest StringQuest
-	stringitem  StringItem
-	stringname  StringName
-	quest       Quest
-	monster     Monster
-	prop        Prop
+	Dialogue    Dialogue
+	Npc         NPC
+	Qitem       Qitem
+	Stringquest StringQuest
+	Stringitem  StringItem
+	Stringname  StringName
+	Quest       Quest
+	Monster     Monster
+	Prop        Prop
+}
+
+type rp interface {
+	Init()
+	GetDataByID(w http.ResponseWriter, req *http.Request) interface{}
+}
+
+var AAProvider = []rp{
+	&Dialogue{},
+	&NPC{},
+	&Qitem{},
+	&StringItem{},
+	&StringName{},
+	&StringQuest{},
+	&Monster{},
+	&Quest{},
+	&Prop{},
 }
 
 //leehs 20220608 초기에 한번만 redis 데이터 저장
 func (r *ResourceProvider) Init() {
-	monster = r.monster.Init()
-	dia = r.dialogue.Init()
-	npc = r.npc.Init()
-	qitem = r.qitem.Init()
-	sq = r.stringquest.Init()
-	si = r.stringitem.Init()
-	sn = r.stringname.Init()
-	quest = r.quest.Init()
-	prop = r.prop.Init()
+	for _, k := range AAProvider {
+		k.Init()
+	}
 }
 
 //leehs 20220517 주어진 경로의 모든 데이터 파일들의 리스트를 반환

@@ -1,10 +1,5 @@
 package server
 
-import (
-	"echo/redis"
-	"encoding/json"
-)
-
 type Monster struct {
 	Id           string `json:"id"`
 	AP           string `json:"ap"`
@@ -30,27 +25,11 @@ type Monster struct {
 	UseSkill     string `json:"useSkill"`
 }
 
-func (this Monster) Init() []Monster {
-	tmp := redis.GetValue(cli, "monster")
-	res := tmp.Val()
-	json.Unmarshal([]byte(res), &monster)
-
-	return monster
-}
-
 type Qitem struct {
 	Id      string `json:"id"`
 	TextKor string `json:"textKor"`
 	TextEng string `json:"textEng"`
 	TextChn string `json:"textChn"`
-}
-
-func (this Qitem) Init() []Qitem {
-	tmp := redis.GetValue(cli, "qitem")
-	res := tmp.Val()
-	json.Unmarshal([]byte(res), &qitem)
-
-	return qitem
 }
 
 type Prop struct {
@@ -62,14 +41,6 @@ type Prop struct {
 	RewardMaterial string `json:"rewardMaterial"`
 	ShapeInfo      string `json:"shapeInfo"`
 	Type           string `json:"type"`
-}
-
-func (this Prop) Init() []Prop {
-	tmp := redis.GetValue(cli, "prop")
-	res := tmp.Val()
-	json.Unmarshal([]byte(res), &prop)
-
-	return prop
 }
 
 type Quest struct {
@@ -89,25 +60,9 @@ type Quest struct {
 	Type                 string `json:"type"`
 }
 
-func (this Quest) Init() []Quest {
-	tmp := redis.GetValue(cli, "quest")
-	res := tmp.Val()
-	json.Unmarshal([]byte(res), &quest)
-
-	return quest
-}
-
 type StringQuest struct {
 	Id          string `json:"id"`
 	Description string `json:"description"`
-}
-
-func (this StringQuest) Init() []StringQuest {
-	tmp := redis.GetValue(cli, "stringquest")
-	res := tmp.Val()
-	json.Unmarshal([]byte(res), &sq)
-
-	return sq
 }
 
 type StringItem struct {
@@ -115,14 +70,6 @@ type StringItem struct {
 	TextKor string `json:"textKor"`
 	TextEng string `json:"textEng"`
 	TextChn string `json:"textChn"`
-}
-
-func (this StringItem) Init() []StringItem {
-	tmp := redis.GetValue(cli, "stringitem")
-	res := tmp.Val()
-	json.Unmarshal([]byte(res), &si)
-
-	return si
 }
 
 type Dialogue struct {
@@ -138,14 +85,6 @@ type Dialogue struct {
 	TextChn         string `json:"textChn"`
 }
 
-func (this Dialogue) Init() []Dialogue {
-	tmp := redis.GetValue(cli, "dialogue")
-	res := tmp.Val()
-	json.Unmarshal([]byte(res), &dia)
-
-	return dia
-}
-
 type NPC struct {
 	Id        string `json:"id"`
 	Name      string `json:"name"`
@@ -154,25 +93,9 @@ type NPC struct {
 	Type      string `json:"type"`
 }
 
-func (this NPC) Init() []NPC {
-	tmp := redis.GetValue(cli, "npc")
-	res := tmp.Val()
-	json.Unmarshal([]byte(res), &npc)
-
-	return npc
-}
-
 type StringName struct {
 	Id      string `json:"id"`
 	TextKor string `json:"textKor"`
 	TextEng string `json:"textEng"`
 	TextChn string `json:"textChn"`
-}
-
-func (this StringName) Init() []StringName {
-	tmp := redis.GetValue(cli, "stringname")
-	res := tmp.Val()
-	json.Unmarshal([]byte(res), &sn)
-
-	return sn
 }

@@ -1,14 +1,22 @@
 package server
 
 import (
+	"echo/redis"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"reflect"
 )
 
+func (this Dialogue) Init() {
+	tmp := redis.GetValue(cli, "dialogue")
+	res := tmp.Val()
+	json.Unmarshal([]byte(res), &dia)
+}
+
 //20220531 leehs id로 값 찾기
-func (this Dialogue) GetDataByID(w http.ResponseWriter, req *http.Request) *Dialogue {
+func (this Dialogue) GetDataByID(w http.ResponseWriter, req *http.Request) interface{} {
 	id := req.FormValue("id")
 
 	for _, i := range dia {
@@ -23,9 +31,9 @@ func (this Dialogue) GetDataByID(w http.ResponseWriter, req *http.Request) *Dial
 }
 
 //20220531 leehs Type으로 값 찾기
-func (this Dialogue) GetDataByType(w http.ResponseWriter, req *http.Request) []Dialogue {
+func (this Dialogue) GetDataByType(w http.ResponseWriter, req *http.Request) []interface{} {
 	Type := req.FormValue("type")
-	var tmp []Dialogue
+	var tmp []interface{}
 
 	for _, i := range dia {
 		if i.Type == Type {
@@ -42,12 +50,19 @@ func (this Dialogue) GetDataByType(w http.ResponseWriter, req *http.Request) []D
 	return tmp
 }
 
+func (this Monster) Init() {
+	tmp := redis.GetValue(cli, "monster")
+	res := tmp.Val()
+	json.Unmarshal([]byte(res), &monster)
+}
+
 //20220531 leehs id로 값 찾기
-func (this Monster) GetDataByID(w http.ResponseWriter, req *http.Request) *Monster {
+func (this Monster) GetDataByID(w http.ResponseWriter, req *http.Request) interface{} {
 	id := req.FormValue("id")
 
 	for _, i := range monster {
-		if i.Id == id {
+		fmt.Println(reflect.ValueOf(i).FieldByName("Id").String())
+		if reflect.ValueOf(i).FieldByName("Id").String() == id {
 			tmp, _ := json.MarshalIndent(i, "", " ")
 			fmt.Println(string(tmp))
 			return &i
@@ -58,12 +73,12 @@ func (this Monster) GetDataByID(w http.ResponseWriter, req *http.Request) *Monst
 }
 
 //20220531 leehs Name으로 값 찾기
-func (this Monster) GetDataByName(w http.ResponseWriter, req *http.Request) []Monster {
+func (this Monster) GetDataByName(w http.ResponseWriter, req *http.Request) []interface{} {
 	name := req.FormValue("name")
-	var tmp []Monster
+	var tmp []interface{}
 
 	for _, i := range monster {
-		if i.Name == name {
+		if reflect.ValueOf(i).FieldByName("Name").String() == name {
 			tmp = append(tmp, i)
 		}
 	}
@@ -77,8 +92,14 @@ func (this Monster) GetDataByName(w http.ResponseWriter, req *http.Request) []Mo
 	return tmp
 }
 
+func (this NPC) Init() {
+	tmp := redis.GetValue(cli, "npc")
+	res := tmp.Val()
+	json.Unmarshal([]byte(res), &npc)
+}
+
 //20220531 leehs id로 값 찾기
-func (this NPC) GetDataByID(w http.ResponseWriter, req *http.Request) *NPC {
+func (this NPC) GetDataByID(w http.ResponseWriter, req *http.Request) interface{} {
 	id := req.FormValue("id")
 
 	for _, i := range npc {
@@ -93,9 +114,9 @@ func (this NPC) GetDataByID(w http.ResponseWriter, req *http.Request) *NPC {
 }
 
 //20220531 leehs Type으로 값 찾기
-func (this NPC) GetDataByType(w http.ResponseWriter, req *http.Request) []NPC {
+func (this NPC) GetDataByType(w http.ResponseWriter, req *http.Request) []interface{} {
 	Type := req.FormValue("type")
-	var tmp []NPC
+	var tmp []interface{}
 
 	for _, i := range npc {
 		//fmt.Println(i)
@@ -113,8 +134,14 @@ func (this NPC) GetDataByType(w http.ResponseWriter, req *http.Request) []NPC {
 	return tmp
 }
 
+func (this Prop) Init() {
+	tmp := redis.GetValue(cli, "prop")
+	res := tmp.Val()
+	json.Unmarshal([]byte(res), &prop)
+}
+
 //20220531 leehs id로 값 찾기
-func (this Prop) GetDataByID(w http.ResponseWriter, req *http.Request) *Prop {
+func (this Prop) GetDataByID(w http.ResponseWriter, req *http.Request) interface{} {
 	id := req.FormValue("id")
 
 	for _, i := range prop {
@@ -129,9 +156,9 @@ func (this Prop) GetDataByID(w http.ResponseWriter, req *http.Request) *Prop {
 }
 
 //20220531 leehs Name으로 값 찾기
-func (this Prop) GetDataByName(w http.ResponseWriter, req *http.Request) []Prop {
+func (this Prop) GetDataByName(w http.ResponseWriter, req *http.Request) []interface{} {
 	name := req.FormValue("name")
-	var tmp []Prop
+	var tmp []interface{}
 
 	for _, i := range prop {
 		if i.Name == name {
@@ -148,8 +175,14 @@ func (this Prop) GetDataByName(w http.ResponseWriter, req *http.Request) []Prop 
 	return tmp
 }
 
+func (this Qitem) Init() {
+	tmp := redis.GetValue(cli, "qitem")
+	res := tmp.Val()
+	json.Unmarshal([]byte(res), &qitem)
+}
+
 //20220531 leehs id로 값 찾기
-func (this Qitem) GetDataByID(w http.ResponseWriter, req *http.Request) *Qitem {
+func (this Qitem) GetDataByID(w http.ResponseWriter, req *http.Request) interface{} {
 	id := req.FormValue("id")
 
 	for _, i := range qitem {
@@ -163,8 +196,14 @@ func (this Qitem) GetDataByID(w http.ResponseWriter, req *http.Request) *Qitem {
 	return nil
 }
 
+func (this Quest) Init() {
+	tmp := redis.GetValue(cli, "quest")
+	res := tmp.Val()
+	json.Unmarshal([]byte(res), &quest)
+}
+
 //20220531 leehs id로 값 찾기
-func (this Quest) GetDataByID(w http.ResponseWriter, req *http.Request) *Quest {
+func (this Quest) GetDataByID(w http.ResponseWriter, req *http.Request) interface{} {
 	id := req.FormValue("id")
 
 	for _, i := range quest {
@@ -179,9 +218,9 @@ func (this Quest) GetDataByID(w http.ResponseWriter, req *http.Request) *Quest {
 }
 
 //20220531 leehs Name으로 값 찾기
-func (this Quest) GetDataByName(w http.ResponseWriter, req *http.Request) []Quest {
+func (this Quest) GetDataByName(w http.ResponseWriter, req *http.Request) []interface{} {
 	name := req.FormValue("name")
-	var tmp []Quest
+	var tmp []interface{}
 
 	for _, i := range quest {
 		if i.Name == name {
@@ -198,8 +237,14 @@ func (this Quest) GetDataByName(w http.ResponseWriter, req *http.Request) []Ques
 	return tmp
 }
 
+func (this StringItem) Init() {
+	tmp := redis.GetValue(cli, "stringitem")
+	res := tmp.Val()
+	json.Unmarshal([]byte(res), &si)
+}
+
 //20220531 leehs id로 값 찾기
-func (this StringItem) GetDataByID(w http.ResponseWriter, req *http.Request) *StringItem {
+func (this StringItem) GetDataByID(w http.ResponseWriter, req *http.Request) interface{} {
 	id := req.FormValue("id")
 
 	for _, i := range si {
@@ -213,8 +258,14 @@ func (this StringItem) GetDataByID(w http.ResponseWriter, req *http.Request) *St
 	return nil
 }
 
+func (this StringName) Init() {
+	tmp := redis.GetValue(cli, "stringname")
+	res := tmp.Val()
+	json.Unmarshal([]byte(res), &sn)
+}
+
 //20220531 leehs id로 값 찾기
-func (this StringName) GetDataByID(w http.ResponseWriter, req *http.Request) *StringName {
+func (this StringName) GetDataByID(w http.ResponseWriter, req *http.Request) interface{} {
 	id := req.FormValue("id")
 
 	for _, i := range sn {
@@ -228,8 +279,14 @@ func (this StringName) GetDataByID(w http.ResponseWriter, req *http.Request) *St
 	return nil
 }
 
+func (this StringQuest) Init() {
+	tmp := redis.GetValue(cli, "stringquest")
+	res := tmp.Val()
+	json.Unmarshal([]byte(res), &sq)
+}
+
 //20220531 leehs id로 값 찾기
-func (this StringQuest) GetDataByID(w http.ResponseWriter, req *http.Request) *StringQuest {
+func (this StringQuest) GetDataByID(w http.ResponseWriter, req *http.Request) interface{} {
 	id := req.FormValue("id")
 
 	for _, i := range sq {
@@ -244,9 +301,9 @@ func (this StringQuest) GetDataByID(w http.ResponseWriter, req *http.Request) *S
 }
 
 //20220531 leehs Desciption으로 값 찾기
-func (this StringQuest) GetDataByDesc(w http.ResponseWriter, req *http.Request) []StringQuest {
+func (this StringQuest) GetDataByDesc(w http.ResponseWriter, req *http.Request) []interface{} {
 	desc := req.FormValue("desc")
-	var tmp []StringQuest
+	var tmp []interface{}
 
 	for _, i := range sq {
 		if i.Description == desc {

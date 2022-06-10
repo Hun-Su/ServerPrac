@@ -1,7 +1,6 @@
 package HTTP
 
 import (
-	"echo/redis"
 	"echo/server"
 	"log"
 	"net/http"
@@ -24,7 +23,6 @@ type TestHandler struct {
 
 //leehs 20220516 path와 메소드를 매핑하여 저장하는 map
 var functions map[string]interface{}
-var cli = redis.GetRedisCli()
 
 //leehs 20220516 핸들러의 모든 필드들의 메소드들을 각각 map에 저장하는 함수
 func (h *TestHandler) Init() {
