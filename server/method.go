@@ -16,7 +16,7 @@ func (this Dialogue) Init() {
 }
 
 //20220531 leehs id로 값 찾기
-func (this Dialogue) GetDataByID(w http.ResponseWriter, req *http.Request) interface{} {
+func (this Dialogue) GetDataByID(w http.ResponseWriter, req *http.Request) *Dialogue {
 	id := req.FormValue("id")
 
 	for _, i := range dia {
@@ -31,9 +31,9 @@ func (this Dialogue) GetDataByID(w http.ResponseWriter, req *http.Request) inter
 }
 
 //20220531 leehs Type으로 값 찾기
-func (this Dialogue) GetDataByType(w http.ResponseWriter, req *http.Request) []interface{} {
+func (this Dialogue) GetDataByType(w http.ResponseWriter, req *http.Request) []Dialogue {
 	Type := req.FormValue("type")
-	var tmp []interface{}
+	var tmp []Dialogue
 
 	for _, i := range dia {
 		if i.Type == Type {
@@ -57,7 +57,7 @@ func (this Monster) Init() {
 }
 
 //20220531 leehs id로 값 찾기
-func (this Monster) GetDataByID(w http.ResponseWriter, req *http.Request) interface{} {
+func (this Monster) GetDataByID(w http.ResponseWriter, req *http.Request) *Monster {
 	id := req.FormValue("id")
 
 	for _, i := range monster {
@@ -73,9 +73,9 @@ func (this Monster) GetDataByID(w http.ResponseWriter, req *http.Request) interf
 }
 
 //20220531 leehs Name으로 값 찾기
-func (this Monster) GetDataByName(w http.ResponseWriter, req *http.Request) []interface{} {
+func (this Monster) GetDataByName(w http.ResponseWriter, req *http.Request) []Monster {
 	name := req.FormValue("name")
-	var tmp []interface{}
+	var tmp []Monster
 
 	for _, i := range monster {
 		if reflect.ValueOf(i).FieldByName("Name").String() == name {
@@ -99,7 +99,7 @@ func (this NPC) Init() {
 }
 
 //20220531 leehs id로 값 찾기
-func (this NPC) GetDataByID(w http.ResponseWriter, req *http.Request) interface{} {
+func (this NPC) GetDataByID(w http.ResponseWriter, req *http.Request) *NPC {
 	id := req.FormValue("id")
 
 	for _, i := range npc {
@@ -114,9 +114,9 @@ func (this NPC) GetDataByID(w http.ResponseWriter, req *http.Request) interface{
 }
 
 //20220531 leehs Type으로 값 찾기
-func (this NPC) GetDataByType(w http.ResponseWriter, req *http.Request) []interface{} {
+func (this NPC) GetDataByType(w http.ResponseWriter, req *http.Request) []NPC {
 	Type := req.FormValue("type")
-	var tmp []interface{}
+	var tmp []NPC
 
 	for _, i := range npc {
 		//fmt.Println(i)
@@ -141,7 +141,7 @@ func (this Prop) Init() {
 }
 
 //20220531 leehs id로 값 찾기
-func (this Prop) GetDataByID(w http.ResponseWriter, req *http.Request) interface{} {
+func (this Prop) GetDataByID(w http.ResponseWriter, req *http.Request) *Prop {
 	id := req.FormValue("id")
 
 	for _, i := range prop {
@@ -156,9 +156,9 @@ func (this Prop) GetDataByID(w http.ResponseWriter, req *http.Request) interface
 }
 
 //20220531 leehs Name으로 값 찾기
-func (this Prop) GetDataByName(w http.ResponseWriter, req *http.Request) []interface{} {
+func (this Prop) GetDataByName(w http.ResponseWriter, req *http.Request) []Prop {
 	name := req.FormValue("name")
-	var tmp []interface{}
+	var tmp []Prop
 
 	for _, i := range prop {
 		if i.Name == name {
@@ -182,7 +182,7 @@ func (this Qitem) Init() {
 }
 
 //20220531 leehs id로 값 찾기
-func (this Qitem) GetDataByID(w http.ResponseWriter, req *http.Request) interface{} {
+func (this Qitem) GetDataByID(w http.ResponseWriter, req *http.Request) *Qitem {
 	id := req.FormValue("id")
 
 	for _, i := range qitem {
@@ -203,7 +203,7 @@ func (this Quest) Init() {
 }
 
 //20220531 leehs id로 값 찾기
-func (this Quest) GetDataByID(w http.ResponseWriter, req *http.Request) interface{} {
+func (this Quest) GetDataByID(w http.ResponseWriter, req *http.Request) *Quest {
 	id := req.FormValue("id")
 
 	for _, i := range quest {
@@ -218,9 +218,9 @@ func (this Quest) GetDataByID(w http.ResponseWriter, req *http.Request) interfac
 }
 
 //20220531 leehs Name으로 값 찾기
-func (this Quest) GetDataByName(w http.ResponseWriter, req *http.Request) []interface{} {
+func (this Quest) GetDataByName(w http.ResponseWriter, req *http.Request) []Quest {
 	name := req.FormValue("name")
-	var tmp []interface{}
+	var tmp []Quest
 
 	for _, i := range quest {
 		if i.Name == name {
@@ -244,7 +244,7 @@ func (this StringItem) Init() {
 }
 
 //20220531 leehs id로 값 찾기
-func (this StringItem) GetDataByID(w http.ResponseWriter, req *http.Request) interface{} {
+func (this StringItem) GetDataByID(w http.ResponseWriter, req *http.Request) *StringItem {
 	id := req.FormValue("id")
 
 	for _, i := range si {
@@ -265,7 +265,7 @@ func (this StringName) Init() {
 }
 
 //20220531 leehs id로 값 찾기
-func (this StringName) GetDataByID(w http.ResponseWriter, req *http.Request) interface{} {
+func (this StringName) GetDataByID(w http.ResponseWriter, req *http.Request) *StringName {
 	id := req.FormValue("id")
 
 	for _, i := range sn {
@@ -286,7 +286,7 @@ func (this StringQuest) Init() {
 }
 
 //20220531 leehs id로 값 찾기
-func (this StringQuest) GetDataByID(w http.ResponseWriter, req *http.Request) interface{} {
+func (this StringQuest) GetDataByID(w http.ResponseWriter, req *http.Request) *StringQuest {
 	id := req.FormValue("id")
 
 	for _, i := range sq {
@@ -301,9 +301,9 @@ func (this StringQuest) GetDataByID(w http.ResponseWriter, req *http.Request) in
 }
 
 //20220531 leehs Desciption으로 값 찾기
-func (this StringQuest) GetDataByDesc(w http.ResponseWriter, req *http.Request) []interface{} {
+func (this StringQuest) GetDataByDesc(w http.ResponseWriter, req *http.Request) []StringQuest {
 	desc := req.FormValue("desc")
-	var tmp []interface{}
+	var tmp []StringQuest
 
 	for _, i := range sq {
 		if i.Description == desc {

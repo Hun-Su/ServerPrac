@@ -48,12 +48,13 @@ type ResourceProvider struct {
 	Prop        Prop
 }
 
-type rp interface {
+type GetAllRedisData interface {
 	Init()
-	GetDataByID(w http.ResponseWriter, req *http.Request) interface{}
+	//GetDataByID(w http.ResponseWriter, req *http.Request) interface{}
+	//leehs 20220610 모든 필드가 가지고 있는 메소드만 추가 할것
 }
 
-var AAProvider = []rp{
+var ResourceList = []GetAllRedisData{
 	&Dialogue{},
 	&NPC{},
 	&Qitem{},
@@ -67,7 +68,7 @@ var AAProvider = []rp{
 
 //leehs 20220608 초기에 한번만 redis 데이터 저장
 func (r *ResourceProvider) Init() {
-	for _, k := range AAProvider {
+	for _, k := range ResourceList {
 		k.Init()
 	}
 }
