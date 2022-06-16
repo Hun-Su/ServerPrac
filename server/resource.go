@@ -51,7 +51,7 @@ type ResourceProvider struct {
 type GetAllRedisData interface {
 	Init()
 	//GetDataByID(w http.ResponseWriter, req *http.Request) interface{}
-	//leehs 20220610 모든 필드가 가지고 있는 메소드만 추가 할것
+	//leehs 20220610 모든 필드가 가지고 있는 메소드만 추가 할것(인자와 반환 타입도 같아야 함, interface x)
 }
 
 var ResourceList = []GetAllRedisData{
@@ -300,15 +300,15 @@ func (this Resource) SetRedis(w http.ResponseWriter, req *http.Request) {
 		valuePtrs := make([]interface{}, len(columns))
 
 		for rows.Next() {
-			for i := 0; i < len(columns); i++ {
-				valuePtrs[i] = &values[i]
+			for j := 0; j < len(columns); j++ {
+				valuePtrs[j] = &values[j]
 			}
 			//leehs 20220530 각 Column에 저장된 데이터를 포인터가 가르키는 곳에 저장
 			rows.Scan(valuePtrs...)
 			entry := make(map[string]interface{})
-			for i, col := range columns {
+			for j, col := range columns {
 				var v interface{}
-				val := values[i]
+				val := values[j]
 				b, ok := val.([]byte)
 				if ok {
 					v = string(b)
@@ -337,7 +337,6 @@ func (this Resource) GetRedis(w http.ResponseWriter, req *http.Request) (res str
 	tmp := redis.GetValue(cli, table)
 	res = tmp.Val()
 	fmt.Println(res)
-
 	if tmp.Err() == r.Nil {
 		w.Write([]byte("No such table"))
 	} else {

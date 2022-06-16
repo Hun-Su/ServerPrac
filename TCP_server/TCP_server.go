@@ -2,16 +2,19 @@ package TCP_server
 
 import (
 	"bytes"
+	"crypto/aes"
 	"echo/Config"
-	"io/ioutil"
+	"echo/crypto"
+	"fmt"
 	"log"
 	"net"
-	"net/http"
 )
 
+var CONFIG = Config.LoadConfig()
+
 func Comm(c2 net.Conn, err error) {
-	config := Config.LoadConfig()
 	for {
+		key := "Hello Key 123456"
 		if err != nil {
 			log.Println("Failed to accept conn.", err)
 			continue
@@ -22,20 +25,25 @@ func Comm(c2 net.Conn, err error) {
 		buff := make([]byte, 8192)
 		n, _ := c1.Read(buff)
 		tmp1 := bytes.NewBuffer(buff[:n])
+		fmt.Println(tmp1)
 
-		println(tmp1)
-		resp, err := http.Post("http://"+config.Port.HTTP, "text/plain", tmp1)
-
+		block, err := aes.NewCipher([]byte(key))
 		if err != nil {
-			panic(err)
+			fmt.Println(err)
+			return
 		}
-
-		body, err1 := ioutil.ReadAll(resp.Body)
-
-		if err1 != nil {
-			panic(err1)
-		}
-
+		//resp, err := http.Post("http://"+config.Port.HTTP, "text/plain", tmp1)
+		//
+		//if err != nil {
+		//	panic(err)
+		//}
+		//
+		//body, err1 := ioutil.ReadAll(resp.Body)
+		//
+		//if err1 != nil {
+		//	panic(err1)
+		//}
+		body := crypto.Decrypt(block, tmp1.Bytes())
 		c1.Write(body)
 
 		log.Printf(string(body))

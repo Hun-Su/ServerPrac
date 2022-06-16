@@ -34,5 +34,5 @@ func SetValue(cli *redis.Client, key string, val interface{}) string {
 
 //leehs 20220530 Redis 데이터 삭제
 func Empty(cli *redis.Client) {
-	cli.FlushDB(cli.Context())
+	cli.FlushDBAsync(cli.Context())
 }
