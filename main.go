@@ -13,6 +13,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strings"
 )
 
 var CONFIG = Config.LoadConfig()
@@ -32,7 +33,10 @@ func main() {
 		log.Println("Server is running on:", CONFIG.Port.TCP)
 
 		for {
-			conn, err := server.Accept()
+			conn, _ := server.Accept()
+			var handler = TCP_server.TcpSessionHandler(conn, conn.RemoteAddr())
+			TCP_server.CliList = append(TCP_server.CliList, *handler)
+			fmt.Println(TCP_server.CliList)
 			go TCP_server.Comm(conn, err)
 		}
 	case "Client":
@@ -52,6 +56,11 @@ func main() {
 			}
 			r := bufio.NewReader(os.Stdin)
 			s, _ := r.ReadString('\n')
+			if strings.TrimSpace(s) == "quit" {
+				log.Println("Closing connection")
+				conn.Write([]byte("quit"))
+				break
+			}
 			msg := crypto.Encrypt(block, []byte(s))
 			fmt.Println(msg)
 

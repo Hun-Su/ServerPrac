@@ -10,7 +10,11 @@ import (
 
 //20220616 leehs AES CTR 암호화
 func Encrypt(b cipher.Block, plaintext []byte) []byte {
-	ciphertext := make([]byte, len(plaintext))
+	if mod := len(plaintext) % aes.BlockSize; mod != 0 {
+		padding := make([]byte, aes.BlockSize-mod)
+		plaintext = append(plaintext, padding...)
+	}
+	ciphertext := make([]byte, aes.BlockSize+len(plaintext))
 
 	iv := ciphertext[:aes.BlockSize]
 	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
@@ -22,7 +26,7 @@ func Encrypt(b cipher.Block, plaintext []byte) []byte {
 	return ciphertext
 }
 
-//20220616 leehs AES CTR 복호화
+//20220616 leehs AES CTR 암호화
 func Decrypt(b cipher.Block, ciphertext []byte) []byte {
 	iv := ciphertext[:aes.BlockSize]
 	ciphertext = ciphertext[aes.BlockSize:]
