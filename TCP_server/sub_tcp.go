@@ -8,15 +8,20 @@ import (
 )
 
 //leehs 20220623 서브 TCP 서버
-func TCPServer() net.Conn {
+func TCPServer() {
 	listener, err := net.Listen("tcp", CONFIG.Port.SubTCP)
 	if err != nil {
+		log.Println(err)
+		return
 	}
-	tcpconn, err := listener.Accept()
-	if err != nil {
-		log.Fatalln(err)
+	for {
+		tcpconn, err := listener.Accept()
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		go TCPRead(tcpconn)
 	}
-	return tcpconn
 }
 
 //leehs 20220623 주어진 커넥션의 메시지를 읽어 출력

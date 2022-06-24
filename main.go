@@ -68,11 +68,13 @@ func serveTCP() {
 	for {
 		conn, err := server.Accept()
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			continue
 		}
 		tcpconn, err := net.Dial("tcp", CONFIG.Port.SubTCP)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
+			continue
 		}
 
 		//leehs 20220623 접속해 있는 클리이언트 리스트와 연결 정보
@@ -87,8 +89,7 @@ func serveTCP() {
 
 //leehs 20220623 sub TCP 서버
 func servesubTCP() {
-	tcpconn := TCP_server.TCPServer()
-	TCP_server.TCPRead(tcpconn)
+	TCP_server.TCPServer()
 }
 
 //leehs 20220623 Client
