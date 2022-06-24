@@ -1,8 +1,9 @@
 { 
-	"program": "Client",
+	"program": "All",
 	"port": {
 		"tcp": ":1234",
-		"http": "127.0.0.1:5000"
+		"http": "127.0.0.1:5000",
+		"subTCP": ":8000"
 	},
 	"db": {
 		"user": "root",

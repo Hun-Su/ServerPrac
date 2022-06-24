@@ -9,8 +9,9 @@ import (
 type TypeSelector struct {
 	Program string `json:"program"`
 	Port    struct {
-		TCP  string `json:"tcp"`
-		HTTP string `json:"http"`
+		TCP    string `json:"tcp"`
+		HTTP   string `json:"http"`
+		SubTCP string `json:"subTCP"`
 	} `json:"port"`
 	Db struct {
 		User    string `json:"user"`

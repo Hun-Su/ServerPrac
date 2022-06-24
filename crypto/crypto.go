@@ -26,7 +26,7 @@ func Encrypt(b cipher.Block, plaintext []byte) []byte {
 	return ciphertext
 }
 
-//20220616 leehs AES CTR 암호화
+//20220616 leehs AES CTR 복호화
 func Decrypt(b cipher.Block, ciphertext []byte) []byte {
 	iv := ciphertext[:aes.BlockSize]
 	ciphertext = ciphertext[aes.BlockSize:]
