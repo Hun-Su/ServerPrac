@@ -1,0 +1,12 @@
+{"level":"info","ts":"2022-06-27T11:38:48.222+0900","caller":"logging/logging.go:23","msg":"Invalid Option"}
+{"level":"info","ts":"2022-06-27T11:39:37.791+0900","caller":"logging/logging.go:23","msg":"Invalid Option"}
+{"level":"info","ts":"2022-06-27T11:45:14.223+0900","caller":"logging/logging.go:24","msg":"Invalid Option"}{"level":"info","ts":"2022-06-27T13:40:52.830+0900","caller":"logging/logging.go:24","msg":"EOF\n"}
+{"level":"info","ts":"2022-06-27T13:41:22.750+0900","caller":"logging/logging.go:24","msg":"EOF\n"}
+{"level":"info","ts":"2022-06-27T13:42:28.806+0900","caller":"logging/logging.go:24","msg":"EOF\n"}
+{"level":"info","ts":"2022-06-27T13:43:29.606+0900","caller":"logging/logging.go:24","msg":"EOF\n"}
+{"level":"info","ts":"2022-06-27T13:44:16.150+0900","caller":"logging/logging.go:24","msg":"EOF\n"}
+{"level":"info","ts":"2022-06-27T13:50:17.077+0900","caller":"logging/logging.go:24","msg":"EOF\n"}
+{"level":"info","ts":"2022-06-27T13:51:21.478+0900","caller":"logging/logging.go:24","msg":"EOF\n"}
+{"level":"info","ts":"2022-06-27T13:52:49.437+0900","caller":"logging/logging.go:24","msg":"EOF\n"}
+{"level":"info","ts":"2022-06-27T13:54:13.237+0900","caller":"logging/logging.go:24","msg":"EOF\n"}
+{"level":"info","ts":"2022-06-27T13:57:43.053+0900","caller":"logging/logging.go:24","msg":"EOF\n"}

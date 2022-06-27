@@ -1,9 +1,9 @@
 package Config
 
 import (
+	"echo/logging"
 	"encoding/json"
 	"io/ioutil"
-	"log"
 )
 
 type TypeSelector struct {
@@ -31,7 +31,7 @@ func LoadConfig() TypeSelector {
 	file, err := ioutil.ReadFile("pro.json")
 	//defer file.Close()
 	if err != nil {
-		log.Fatal(err)
+		logging.LogFatal(err.Error())
 	}
 	_ = json.Unmarshal(file, &config)
 	return config

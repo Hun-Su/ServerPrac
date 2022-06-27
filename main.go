@@ -8,6 +8,7 @@ import (
 	"echo/TCP_server"
 	Client "echo/cli"
 	"echo/crypto"
+	"echo/logging"
 	"fmt"
 	"log"
 	"net"
@@ -44,7 +45,7 @@ func main() {
 
 		wg.Wait()
 	default:
-		log.Println("Invalid Option")
+		logging.LogInfo("Invalid Option")
 		return
 	}
 }

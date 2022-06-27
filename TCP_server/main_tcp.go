@@ -5,6 +5,7 @@ import (
 	"crypto/aes"
 	"echo/Config"
 	"echo/crypto"
+	"echo/logging"
 	"fmt"
 	"log"
 	"strings"
@@ -22,8 +23,7 @@ func Comm(handler *TcpHandler) {
 		key := "Hello Key 123456"
 		block, err := aes.NewCipher([]byte(key))
 		if err != nil {
-			log.Println(err)
-			return
+			logging.LogInfo(err.Error())
 		}
 
 		//20220620 leehs 클라이언트의 메시지를 읽은 후 quit일 경우 해당 클라이언트 정보 삭제
@@ -34,9 +34,6 @@ func Comm(handler *TcpHandler) {
 			return
 		}
 		tmp1 := bytes.NewBuffer(buff[:n])
-
-		log.Println("From ", handler.Conn.RemoteAddr(), ": ", tmp1)
-
 		if strings.TrimSpace(tmp1.String()) == "quit" || handler.Conn.RemoteAddr() == nil {
 			for i, j := range CliList {
 				if j.Key == handler.Conn.RemoteAddr() {
@@ -49,12 +46,10 @@ func Comm(handler *TcpHandler) {
 		}
 
 		body := crypto.Decrypt(block, tmp1.Bytes())
+		log.Println("From " + handler.Conn.RemoteAddr().String() + ": " + string(body))
 		handler.SubConn.Write(body)
-		//20220620 leehs client에게 다시 보내기 위해 재암호화
-		res := crypto.Encrypt(block, body)
-		handler.Conn.Write(res)
-		log.Println("From ", handler.Conn.RemoteAddr(), ": ", string(body))
-		//resp, err := http.Post("http://"+config.Port.HTTP, "text/plain", tmp1)
+
+		//resp, err := http.Post("http://"+CONFIG.Port.HTTP, "text/plain", tmp1)
 		//
 		//if err != nil {
 		//	panic(err)
@@ -65,5 +60,11 @@ func Comm(handler *TcpHandler) {
 		//if err1 != nil {
 		//	panic(err1)
 		//}
+		buffnew := make([]byte, 8192)
+		handler.SubConn.Read(buffnew)
+		msg := buffnew[:n]
+
+		res := crypto.Encrypt(block, msg)
+		handler.Conn.Write(res)
 	}
 }

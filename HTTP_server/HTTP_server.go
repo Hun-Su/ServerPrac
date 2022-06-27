@@ -1,8 +1,8 @@
 package HTTP
 
 import (
+	"echo/logging"
 	"echo/server"
-	"log"
 	"net/http"
 	"reflect"
 	"strings"
@@ -61,19 +61,25 @@ func initFunctions() {
 }
 
 func (h TestHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	initFunctions()
-	path := req.URL.Path
-
-	//leehs 20220516 functions에 저장된 데이터를 기준으로 path에 맞는 함수 호출
-	if f, i := functions[path]; i {
-		_, err := Call(f, w, req)
-		if err != nil {
-			log.Println(err)
-		}
-	} else {
-		w.WriteHeader(404)
-		log.Println("No such method")
+	//initFunctions()
+	//path := req.URL.Path
+	//
+	////leehs 20220516 functions에 저장된 데이터를 기준으로 path에 맞는 함수 호출
+	//if f, i := functions[path]; i {
+	//	_, err := Call(f, w, req)
+	//	if err != nil {
+	//		log.Println(err)
+	//	}
+	//} else {
+	//	w.WriteHeader(404)
+	//	log.Println("No such method")
+	//}
+	buff := make([]byte, 8192)
+	str, err := req.Body.Read(buff)
+	if err != nil {
+		logging.LogInfo(err.Error())
 	}
+	w.Write(buff[:str])
 }
 
 //leehs 20220520 함수 호출

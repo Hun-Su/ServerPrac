@@ -2,23 +2,23 @@ package TCP_server
 
 import (
 	"bytes"
+	"echo/logging"
 	"fmt"
-	"log"
+	"io/ioutil"
 	"net"
+	"net/http"
 )
 
 //leehs 20220623 서브 TCP 서버
 func TCPServer() {
 	listener, err := net.Listen("tcp", CONFIG.Port.SubTCP)
 	if err != nil {
-		log.Println(err)
-		return
+		logging.LogInfo(err.Error())
 	}
 	for {
 		tcpconn, err := listener.Accept()
 		if err != nil {
-			log.Println(err)
-			continue
+			logging.LogInfo(err.Error())
 		}
 		go TCPRead(tcpconn)
 	}
@@ -28,12 +28,25 @@ func TCPServer() {
 func TCPRead(tcpconn net.Conn) {
 	buff := make([]byte, 8192)
 	for {
-		n, error := tcpconn.Read(buff)
+		n, err := tcpconn.Read(buff)
 		tmp1 := bytes.NewBuffer(buff[:n])
-		if error != nil {
-			log.Println(error)
-			return
+		if err != nil {
+			logging.LogInfo(err.Error())
 		}
 		fmt.Println("subTCP:", tmp1)
+		resp, err := http.Post("http://"+CONFIG.Port.HTTP, "text/plain", tmp1)
+
+		if err != nil {
+			logging.LogFatal(err.Error())
+		}
+
+		body, err := ioutil.ReadAll(resp.Body)
+
+		if err != nil {
+			logging.LogFatal(err.Error())
+		}
+		fmt.Println(string(body))
+
+		tcpconn.Write(body)
 	}
 }

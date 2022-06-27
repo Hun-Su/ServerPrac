@@ -3,7 +3,7 @@ package Client
 import (
 	"crypto/aes"
 	"echo/crypto"
-	"fmt"
+	"echo/logging"
 	"log"
 	"net"
 )
@@ -15,14 +15,12 @@ func StartReceive(conn net.Conn) {
 		n, err := conn.Read(recvBuf)
 
 		if err != nil || n <= 0 {
-			log.Println(err)
-			return
+			logging.LogInfo(err.Error())
 		}
 		key := "Hello Key 123456"
 		block, err := aes.NewCipher([]byte(key))
 		if err != nil {
-			fmt.Println(err)
-			return
+			logging.LogInfo(err.Error())
 		}
 
 		log.Println("From server : ", string(crypto.Decrypt(block, recvBuf[:n])))
