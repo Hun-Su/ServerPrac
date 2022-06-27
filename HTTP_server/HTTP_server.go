@@ -78,6 +78,7 @@ func (h TestHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	str, err := req.Body.Read(buff)
 	if err != nil {
 		logging.LogInfo(err.Error())
+		logging.Logger.Info(err.Error())
 	}
 	w.Write(buff[:str])
 }

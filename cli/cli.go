@@ -21,6 +21,7 @@ func StartReceive(conn net.Conn) {
 		block, err := aes.NewCipher([]byte(key))
 		if err != nil {
 			logging.LogInfo(err.Error())
+			logging.Logger.Info(err.Error())
 		}
 
 		log.Println("From server : ", string(crypto.Decrypt(block, recvBuf[:n])))

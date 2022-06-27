@@ -60,7 +60,8 @@ func serveHTTP() {
 func serveTCP() {
 	server, err := net.Listen("tcp", CONFIG.Port.TCP)
 	if err != nil {
-		log.Fatalln(err)
+		logging.LogInfo(err.Error())
+		logging.Logger.Fatal(err.Error())
 	}
 	defer server.Close()
 
@@ -69,13 +70,13 @@ func serveTCP() {
 	for {
 		conn, err := server.Accept()
 		if err != nil {
-			log.Println(err)
-			continue
+			logging.LogInfo(err.Error())
+			logging.Logger.Info(err.Error())
 		}
 		tcpconn, err := net.Dial("tcp", CONFIG.Port.SubTCP)
 		if err != nil {
-			log.Println(err)
-			continue
+			logging.LogInfo(err.Error())
+			logging.Logger.Info(err.Error())
 		}
 
 		//leehs 20220623 접속해 있는 클리이언트 리스트와 연결 정보
@@ -97,7 +98,8 @@ func servesubTCP() {
 func serveClient() {
 	conn, err := net.Dial("tcp", CONFIG.Port.TCP)
 	if err != nil {
-		log.Fatalf("Failed to bind port")
+		logging.LogInfo(err.Error())
+		logging.Logger.Fatal(err.Error())
 	}
 
 	go Client.StartReceive(conn)
@@ -106,8 +108,8 @@ func serveClient() {
 	for {
 		block, err := aes.NewCipher([]byte(key))
 		if err != nil {
-			fmt.Println(err)
-			return
+			logging.LogInfo(err.Error())
+			logging.Logger.Info(err.Error())
 		}
 		r := bufio.NewReader(os.Stdin)
 		s, _ := r.ReadString('\n')

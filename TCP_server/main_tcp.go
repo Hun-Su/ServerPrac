@@ -24,6 +24,7 @@ func Comm(handler *TcpHandler) {
 		block, err := aes.NewCipher([]byte(key))
 		if err != nil {
 			logging.LogInfo(err.Error())
+			logging.Logger.Info(err.Error())
 		}
 
 		//20220620 leehs 클라이언트의 메시지를 읽은 후 quit일 경우 해당 클라이언트 정보 삭제

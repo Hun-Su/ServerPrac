@@ -19,6 +19,7 @@ func Encrypt(b cipher.Block, plaintext []byte) []byte {
 	iv := ciphertext[:aes.BlockSize]
 	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
 		logging.LogInfo(err.Error())
+		logging.Logger.Info(err.Error())
 	}
 	mode := cipher.NewCTR(b, iv)
 	mode.XORKeyStream(ciphertext[aes.BlockSize:], plaintext)

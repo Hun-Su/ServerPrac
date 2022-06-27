@@ -14,11 +14,13 @@ func TCPServer() {
 	listener, err := net.Listen("tcp", CONFIG.Port.SubTCP)
 	if err != nil {
 		logging.LogInfo(err.Error())
+		logging.Logger.Info(err.Error())
 	}
 	for {
 		tcpconn, err := listener.Accept()
 		if err != nil {
 			logging.LogInfo(err.Error())
+			logging.Logger.Info(err.Error())
 		}
 		go TCPRead(tcpconn)
 	}
@@ -37,13 +39,15 @@ func TCPRead(tcpconn net.Conn) {
 		resp, err := http.Post("http://"+CONFIG.Port.HTTP, "text/plain", tmp1)
 
 		if err != nil {
-			logging.LogFatal(err.Error())
+			logging.LogInfo(err.Error())
+			logging.Logger.Fatal(err.Error())
 		}
 
 		body, err := ioutil.ReadAll(resp.Body)
 
 		if err != nil {
-			logging.LogFatal(err.Error())
+			logging.LogInfo(err.Error())
+			logging.Logger.Fatal(err.Error())
 		}
 		fmt.Println(string(body))
 

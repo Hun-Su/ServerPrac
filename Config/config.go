@@ -31,7 +31,8 @@ func LoadConfig() TypeSelector {
 	file, err := ioutil.ReadFile("pro.json")
 	//defer file.Close()
 	if err != nil {
-		logging.LogFatal(err.Error())
+		logging.LogInfo(err.Error())
+		logging.Logger.Fatal(err.Error())
 	}
 	_ = json.Unmarshal(file, &config)
 	return config
